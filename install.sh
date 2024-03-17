@@ -1,7 +1,7 @@
 #! /bin/bash
 # Copyright (C) Juewuy
 
-[ -z "$url" ] && url="https://github.com/smxs666/v2b-linux@master"
+[ -z "$url" ] && url="https://github.com/smxs666/v2b-linux/master"
 type bash &>/dev/null && shtype=bash || shtype=sh 
 echo='echo -e' 
 [ -n "$(echo -e|grep e)" ] && {
@@ -44,7 +44,7 @@ webget(){
 	fi
 }
 error_down(){
-	$echo "请检查是否可以链接Github"
+	$echo "请检查网络问题"
 }
 #安装及初始化
 gettar(){
