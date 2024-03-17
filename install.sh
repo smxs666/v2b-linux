@@ -1,7 +1,7 @@
 #! /bin/bash
 # Copyright (C) Juewuy
 
-[ -z "$url" ] && url="https://github.com/smxs666/v2b-linux/master"
+[ -z "$url" ] && url="https://raw.githubusercontent.com/smxs666/v2b-linux/master"
 type bash &>/dev/null && shtype=bash || shtype=sh 
 echo='echo -e' 
 [ -n "$(echo -e|grep e)" ] && {
