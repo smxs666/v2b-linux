@@ -44,14 +44,13 @@ webget(){
 	fi
 }
 error_down(){
-	$echo "请参考 \033[32mhttps://github.com/juewuy/ShellCrash/blob/master/README_CN.md"
-	$echo  "\033[33m使用其他安装源重新安装！\033[0m" 
+	$echo "请检查是否可以链接Github"
 }
 #安装及初始化
 gettar(){
 	webget /tmp/ShellCrash.tar.gz "$url/bin/ShellCrash.tar.gz"
 	if [ "$result" != "200" ];then
-		$echo "\033[33m文件下载失败！\033[0m"
+		$echo "\033[33m安装程序下载失败！\033[0m"
 		error_down
 		exit 1
 	else
