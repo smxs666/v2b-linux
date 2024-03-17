@@ -1,6 +1,9 @@
 #!/bin/sh
 # Copyright (C) Juewuy
-
+echo "我是登录脚本"
+echo "我是登录脚本"
+echo "我是登录脚本"
+echo "我是登录脚本"
 error_down(){
 	echo -e  "\033[33m请尝试切换至其他安装源后重新下载！\033[0m" 
 	echo -e  "或者参考 \033[32;4mhttps://juewuy.github.io/bdaz\033[0m 进行本地安装！" 

@@ -101,7 +101,6 @@ ckstatus(){
 	if [ -n "$PID" ];then
 		echo -e "当前内存占用：\033[44m"$VmRSS"\033[0m，已运行：\033[46;30m"$day"\033[44;37m"$time"\033[0m"
 	fi
-	echo -e "TG频道：\033[36;4mhttps://t.me/ShellClash\033[0m"
 	echo -----------------------------------------------
 	#检查新手引导
 	if [ -z "$userguide" ];then
@@ -203,7 +202,7 @@ start_core(){
 		done
 		[ -n "$test" -o -n "$(pidof CrashCore)" ] && startover
 	else
-		echo -e "\033[31m没有找到${crashcore}配置文件，请先导入配置文件！\033[0m"
+		echo -e "\033[31m没有找到配置文件，登录机场账号获取配置文件！\033[0m"
 		source ${CRASHDIR}/update.sh && set_core_config
 	fi
 }
@@ -1943,7 +1942,7 @@ main_menu(){
 case "$1" in
 	-h)
 		echo -----------------------------------------
-		echo "欢迎使用ShellCrash"
+		echo "欢迎使用本客户端"
 		echo -----------------------------------------
 		echo "	-t 测试模式"
 		echo "	-h 帮助列表"
@@ -1954,10 +1953,6 @@ case "$1" in
 		echo "	crash -s start	启动服务"
 		echo "	crash -s stop	停止服务"
 		echo "	安装目录/start.sh init		开机初始化"
-		echo -----------------------------------------
-		echo "在线求助：t.me/ShellClash"
-		echo "官方博客：juewuy.github.io"
-		echo "发布页面：github.com/juewuy/ShellCrash"
 		echo -----------------------------------------
 	;;
 	-t)
