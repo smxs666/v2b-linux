@@ -963,44 +963,68 @@ gen_core_config_link(){ #在线生成工具
 	done
 } 
 set_core_config_link(){ #直接导入配置
-	echo -----------------------------------------------
-	echo -e "\033[32m仅限导入完整的配置文件链接！！！\033[0m"
-	echo -----------------------------------------------
-	echo -e "\033[33m有流媒体需求，请使用\033[32m6-1在线生成配置文件功能！！！\033[0m"
-	echo -e "\033[33m如不了解机制，请使用\033[32m6-1在线生成配置文件功能！！！\033[0m"
-	echo -e "\033[33m如遇任何问题，请使用\033[32m6-1在线生成配置文件功能！！！\033[0m"
-	echo -e "\033[31m此功能可能会导致部分节点无法连接或者规则覆盖不完整！！！\033[0m"
-	echo -----------------------------------------------
-	echo -e "\033[33m0 返回上级菜单\033[0m"
-	echo -----------------------------------------------
-	read -p "请输入完整链接 > " link
-	test=$(echo $link | grep -iE "tp.*://" )
-	link=`echo ${link/\ \(*\)/''}`   #删除恶心的超链接内容
-	link=`echo ${link//\&/\\\&}`   #处理分隔符
-	if [ -n "$link" -a -n "$test" ];then
-		echo -----------------------------------------------
-		echo -e 请检查输入的链接是否正确：
-		echo -e "\033[4;32m$link\033[0m"
-		read -p "确认导入配置文件？原配置文件将被备份![1/0] > " res
-			if [ "$res" = '1' ]; then
-				#将用户链接写入配置
-				sed -i '/Url=*/'d $CFG_PATH
-				setconfig Https \'$link\'
-				setconfig Url
-				#获取在线yaml文件
-				get_core_config
-			else
-				set_core_config_link
-			fi
-	elif [ "$link" = 0 ];then
-		i=
-	else
-		echo -----------------------------------------------
-		echo -e "\033[31m请输入正确的配置文件链接地址！！！\033[0m"
-		echo -e "\033[33m仅支持http、https、ftp以及ftps链接！\033[0m"
-		sleep 1
-		set_core_config_link
-	fi
+#下面是api-denglu.sh的内容
+# 获取 API 端点
+API_JSON=$(curl -s https://raw.githubusercontent.com/smxs666/v2b-linux/main/api.json)
+API_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/api/ {print $4}')
+SUB_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/sub/ {print $4}')
+
+
+
+#echo "获取到的api.json信息：$API_JSON"
+#echo "-------------"
+#echo "获取到的api信息:$API_BASE_URL"
+#echo "-------------"
+#echo "获取到的sub信息:$SUB_BASE_URL"
+
+
+
+# 提示用户输入登录信息
+echo "开始登录"
+read -p "请输入电子邮件地址: " email
+read -sp "请输入密码: " password
+echo
+
+# 登录并获取token和auth_data
+login_response=$(curl -s -X POST "$API_BASE_URL/api/v1/passport/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "email=$email&password=$password")
+
+token=$(echo "$login_response" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+auth_data=$(echo "$login_response" | grep -o '"auth_data":"[^"]*' | cut -d'"' -f4)
+
+# 检查登录是否成功
+if [ -z "$token" ] || [ -z "$auth_data" ]; then
+  echo "登录失败,请检查您的电子邮件和密码"
+  exit 1
+fi
+
+echo "登录成功!"
+
+# 获取订阅链接
+sub_link="$SUB_BASE_URL/api/v1/client/subscribe?token=$token"
+subscribe_response=$(curl -s -X GET "$sub_link")
+
+if [ -n "$subscribe_response" ]; then
+  #echo "clash订阅链接: $sub_link"
+  echo "登录成功，开始下载节点配置文件"
+else
+  echo "获取订阅链接失败,请检查API响应"
+fi
+
+
+
+curl -X GET \
+     -H "Accept: */*" \
+     -H "Accept-Language: en-US,en;q=0.5" \
+     -H "User-Agent: Clash" \
+     -H "Cache-Control: no-cache" \
+     -H "Connection: keep-alive" \
+     -H "Pragma: no-cache" \
+     -H "Authorization: Bearer <token>" \
+     --compressed \
+     $sub_link | tee /tmp/ShellCrash/config.yaml >/dev/null
+#上面是api-denglu.sh的内容
 }
 set_core_config(){ #配置文件功能
 	[ -z "$rule_link" ] && rule_link=1
@@ -2315,7 +2339,8 @@ userguide(){
 		echo -e "\033[32m您是否注册好了账号并购买了套餐？\033[0m(这是运行前的最后一步)"
 		echo -e "\033[0m你必须拥有一份本机场的套餐才能登录且运行该服务！\033[0m"
 		echo -----------------------------------------------
-		bash api-denglu.sh
+		read -p "现在开始登录？(1/0) > " res
+		[ "$res" = 1 ] && inuserguide=1 && set_core_config && inuserguide=""
 	}
 	#回到主界面
 	echo -----------------------------------------------
