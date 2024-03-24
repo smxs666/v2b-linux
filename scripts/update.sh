@@ -2312,11 +2312,19 @@ userguide(){
 	#提示导入订阅或者配置文件
 	[ ! -s $CRASHDIR/yamls/config.yaml -a ! -s $CRASHDIR/jsons/config.json ] && {
 		echo -----------------------------------------------
-		echo -e "\033[32m是否导入配置文件？\033[0m(这是运行前的最后一步)"
-		echo -e "\033[0m你必须拥有一份yaml格式的配置文件才能运行服务！\033[0m"
+		echo -e "\033[32m您是否注册好了账号并购买了套餐？\033[0m(这是运行前的最后一步)"
+		echo -e "\033[0m你必须拥有一份本机场的套餐才能登录且运行该服务！\033[0m"
 		echo -----------------------------------------------
-		read -p "现在开始导入？(1/0) > " res
-		[ "$res" = 1 ] && inuserguide=1 && set_core_config && inuserguide=""
+		read -p "现在开始登录？(1/0) > " res
+
+if [ "$res" = 1 ]; then
+    inuserguide=1
+    set_core_config
+    inuserguide=""
+    bash api-denglu.sh
+else
+    echo "您选择了不登录"
+fi
 	}
 	#回到主界面
 	echo -----------------------------------------------
