@@ -141,8 +141,7 @@ if [ -n "$systype" ];then
 	}
 	[ "$systype" = "ng_snapshot" ] && dir=/tmp/mnt
 else	
-	$echo " 1 在\033[32m/etc目录\033[0m下安装
-
+	$echo " 1 在\033[32m/etc目录\033[0m下安装"
 	$echo " 0 退出安装"
 	echo -----------------------------------------------
 	read -p "请输入相应数字 > " num
@@ -153,7 +152,14 @@ else
 	elif [ "$num" = "1" ];then
 		dir=/etc
 	elif [ "$num" = "2" ];then
-		echo "乱按什么呢！！！"
+		dir=/usr/share
+	elif [ "$num" = "3" ];then
+		dir=~/.local/share
+		mkdir -p ~/.config/systemd/user
+	elif [ "$num" = "4" ];then
+		set_usb_dir
+	elif [ "$num" = "5" ];then
+		set_cust_dir
 	else
 		echo 安装已取消！！！
 		exit 1;
