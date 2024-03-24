@@ -1027,133 +1027,68 @@ curl -X GET \
 #上面是api-denglu.sh的内容
 }
 set_core_config(){ #配置文件功能
-	[ -z "$rule_link" ] && rule_link=1
-	[ -z "$server_link" ] && server_link=1
-	[ "$crashcore" = singbox -o "$crashcore" = singboxp ] && config_path=${JSONSDIR}/config.json || config_path=${YAMLSDIR}/config.yaml
-	echo -----------------------------------------------
-	echo -e "\033[30;47m ShellCrash配置文件管理\033[0m"
-	echo -----------------------------------------------
-	echo -e " 1 在线\033[32m生成$crashcore配置文件\033[0m"
-	echo -e " 2 在线\033[33m获取完整配置文件\033[0m"
-	echo -e " 3 本地\033[32m生成providers配置文件\033[0m"	
-	echo -e " 4 本地\033[33m上传完整配置文件\033[0m"
-	echo -e " 5 设置\033[36m自动更新\033[0m"
-	echo -e " 6 \033[32m自定义\033[0m配置文件"
-	echo -e " 7 \033[33m更新\033[0m配置文件"
-	echo -e " 8 \033[36m还原\033[0m配置文件"
-	echo -----------------------------------------------
-	[ "$inuserguide" = 1 ] || echo -e " 0 返回上级菜单"
-	read -p "请输入对应数字 > " num
-	case "$num" in
-	1)
-		if [ -n "$Url" ];then
-			echo -----------------------------------------------
-			echo -e "\033[33m检测到已记录的链接内容：\033[0m"
-			echo -e "\033[4;32m$Url\033[0m"
-			echo -----------------------------------------------
-			read -p "清空链接/追加导入？[1/0] > " res
-			if [ "$res" = '1' ]; then
-				Url_link=""
-				echo -----------------------------------------------
-				echo -e "\033[31m链接已清空！\033[0m"
-			else
-				Url_link=$Url
-			fi
-		fi
-		gen_core_config_link
-	;;
-	2)
-		echo -----------------------------------------------
-		echo -e "\033[33m此功能可能会导致一些bug！！！\033[0m"
-		echo -e "强烈建议你使用\033[32m在线生成配置文件功能！\033[0m"
-		echo -e "\033[33m继续后如出现任何问题，请务必自行解决，一切提问恕不受理！\033[0m"
-		echo -----------------------------------------------
-		sleep 1
-		read -p "我确认遇到问题可以自行解决[1/0] > " res
-		if [ "$res" = '1' ]; then
-			set_core_config_link
-		else
-			echo -----------------------------------------------
-			echo -e "\033[32m正在跳转……\033[0m"
-			sleep 1
-			gen_core_config_link
-		fi
-	;;
-	3)
-		if [ "$crashcore" = meta -o "$crashcore" = clashpre ];then
-			coretype=clash
-			setproviders
-		elif [ "$crashcore" = singboxp ];then
-			coretype=singbox
-			setproviders
-		else
-			echo -e "\033[33msingbox官方内核及Clash基础内核不支持此功能，请先更换内核！\033[0m"
-			sleep 1
-			checkupdate && setcore
-		fi
-		set_core_config
-	;;
-	4)
-		echo -----------------------------------------------
-		echo -e "\033[33m请将本地配置文件上传到/tmp目录并重命名为config.yaml或者config.json\033[0m"
-		echo -e "\033[32m之后重新运行本脚本即可自动弹出导入提示！\033[0m"
-		exit
-	;;
-	5)
-		source ${CRASHDIR}/task/task.sh && task_menu
-		set_core_config
-	;;
-	6)
-		checkcfg=$(cat $CFG_PATH)
-		override
-		if [ -n "$PID" ];then
-			checkcfg_new=$(cat $CFG_PATH)
-			[ "$checkcfg" != "$checkcfg_new" ] && checkrestart
-		fi
-	;;
-	7)
-		if [ -z "$Url" -a -z "$Https" ];then
-			echo -----------------------------------------------
-			echo -e "\033[31m没有找到你的配置文件/订阅链接！请先输入链接！\033[0m"
-			sleep 1
-			set_core_config
-		else
-			echo -----------------------------------------------
-			echo -e "\033[33m当前系统记录的链接为：\033[0m"
-			echo -e "\033[4;32m$Url$Https\033[0m"
-			echo -----------------------------------------------
-			read -p "确认更新配置文件？[1/0] > " res
-			if [ "$res" = '1' ]; then
-				get_core_config
-			else
-				set_core_config
-			fi
-		fi
-	;;
-	8)
-		if [ ! -f ${config_path}.bak ];then
-			echo -----------------------------------------------
-			echo -e "\033[31m没有找到配置文件的备份！\033[0m"
-			set_core_config
-		else
-			echo -----------------------------------------------
-			echo -e 备份文件共有"\033[32m`wc -l < ${config_path}.bak`\033[0m"行内容，当前文件共有"\033[32m`wc -l < ${config_path}`\033[0m"行内容
-			read -p "确认还原配置文件？此操作不可逆！[1/0] > " res
-			if [ "$res" = '1' ]; then
-				mv ${config_path}.bak ${config_path}
-				echo -----------------------------------------------
-				echo -e "\033[32m配置文件已还原！请手动重启服务！\033[0m"
-				sleep 1
-			else 
-				echo -----------------------------------------------
-				echo -e "\033[31m操作已取消！返回上级菜单！\033[0m"
-				set_core_config
-			fi
-		fi
-	;;
-	*)
-		errornum
-	esac
+#下面是api-denglu.sh的内容
+# 获取 API 端点
+API_JSON=$(curl -s https://raw.githubusercontent.com/smxs666/v2b-linux/main/api.json)
+API_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/api/ {print $4}')
+SUB_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/sub/ {print $4}')
+
+
+
+#echo "获取到的api.json信息：$API_JSON"
+#echo "-------------"
+#echo "获取到的api信息:$API_BASE_URL"
+#echo "-------------"
+#echo "获取到的sub信息:$SUB_BASE_URL"
+
+
+
+# 提示用户输入登录信息
+echo "开始登录"
+read -p "请输入电子邮件地址: " email
+read -sp "请输入密码: " password
+echo
+
+# 登录并获取token和auth_data
+login_response=$(curl -s -X POST "$API_BASE_URL/api/v1/passport/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "email=$email&password=$password")
+
+token=$(echo "$login_response" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+auth_data=$(echo "$login_response" | grep -o '"auth_data":"[^"]*' | cut -d'"' -f4)
+
+# 检查登录是否成功
+if [ -z "$token" ] || [ -z "$auth_data" ]; then
+  echo "登录失败,请检查您的电子邮件和密码"
+  exit 1
+fi
+
+echo "登录成功!"
+
+# 获取订阅链接
+sub_link="$SUB_BASE_URL/api/v1/client/subscribe?token=$token"
+subscribe_response=$(curl -s -X GET "$sub_link")
+
+if [ -n "$subscribe_response" ]; then
+  #echo "clash订阅链接: $sub_link"
+  echo "登录成功，开始下载节点配置文件"
+else
+  echo "获取订阅链接失败,请检查API响应"
+fi
+
+
+
+curl -X GET \
+     -H "Accept: */*" \
+     -H "Accept-Language: en-US,en;q=0.5" \
+     -H "User-Agent: Clash" \
+     -H "Cache-Control: no-cache" \
+     -H "Connection: keep-alive" \
+     -H "Pragma: no-cache" \
+     -H "Authorization: Bearer <token>" \
+     --compressed \
+     $sub_link | tee /tmp/ShellCrash/config.yaml >/dev/null
+#上面是api-denglu.sh的内容
 }
 #下载更新相关
 getscripts(){ #更新脚本文件
