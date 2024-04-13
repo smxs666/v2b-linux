@@ -1,9 +1,5 @@
 #!/bin/sh
 # Copyright (C) Juewuy
-echo "我是登录脚本"
-echo "我是登录脚本"
-echo "我是登录脚本"
-echo "我是登录脚本"
 error_down(){
 	echo -e  "\033[33m请尝试切换至其他安装源后重新下载！\033[0m" 
 	echo -e  "或者参考 \033[32;4mhttps://juewuy.github.io/bdaz\033[0m 进行本地安装！" 
@@ -1974,7 +1970,7 @@ setserver(){
 		echo -----------------------------------------------
 		echo -e "\033[33m开发版未经过妥善测试，可能依然存在大量bug！！！\033[0m"
 		echo -e "\033[36m如果你没有足够的耐心或者测试经验，切勿使用此版本！\033[0m"
-		echo -e "请务必加入我们的讨论组：\033[32;4mhttps://t.me/ShellClash\033[0m"
+		echo -e ""
 		read -p "是否依然切换到开发版？(1/0) > " res
 		if [ "$res" = 1 ];then
 			release_type=dev

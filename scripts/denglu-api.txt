@@ -1,0 +1,62 @@
+#下面是api-denglu.sh的内容
+# 获取 API 端点
+API_JSON=$(curl -s https://raw.githubusercontent.com/smxs666/v2b-linux/main/api.json)
+API_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/api/ {print $4}')
+SUB_BASE_URL=$(echo "$API_JSON" | awk -F'"' '/sub/ {print $4}')
+
+
+
+#echo "获取到的api.json信息：$API_JSON"
+#echo "-------------"
+#echo "获取到的api信息:$API_BASE_URL"
+#echo "-------------"
+#echo "获取到的sub信息:$SUB_BASE_URL"
+
+
+
+# 提示用户输入登录信息
+echo "开始登录"
+read -p "请输入电子邮件地址: " email
+read -sp "请输入密码: " password
+echo
+
+# 登录并获取token和auth_data
+login_response=$(curl -s -X POST "$API_BASE_URL/api/v1/passport/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "email=$email&password=$password")
+
+token=$(echo "$login_response" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+auth_data=$(echo "$login_response" | grep -o '"auth_data":"[^"]*' | cut -d'"' -f4)
+
+# 检查登录是否成功
+if [ -z "$token" ] || [ -z "$auth_data" ]; then
+  echo "登录失败,请检查您的电子邮件和密码"
+  exit 1
+fi
+
+echo "登录成功!"
+
+# 获取订阅链接
+sub_link="$SUB_BASE_URL/api/v1/client/subscribe?token=$token"
+subscribe_response=$(curl -s -X GET "$sub_link")
+
+if [ -n "$subscribe_response" ]; then
+  #echo "clash订阅链接: $sub_link"
+  echo "登录成功，开始下载节点配置文件"
+else
+  echo "获取订阅链接失败,请检查API响应"
+fi
+
+
+
+curl -X GET \
+     -H "Accept: */*" \
+     -H "Accept-Language: en-US,en;q=0.5" \
+     -H "User-Agent: Clash" \
+     -H "Cache-Control: no-cache" \
+     -H "Connection: keep-alive" \
+     -H "Pragma: no-cache" \
+     -H "Authorization: Bearer <token>" \
+     --compressed \
+     $sub_link | tee /tmp/ShellCrash/config.yaml >/dev/null
+#上面是api-denglu.sh的内容
