@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #全局变量
-API_URL=https://fastly.jsdelivr.net/gh/smxs666/v2b-linux@main/api.json
+API_URL=https://fastly.jsdelivr.net/gh/smxs666/v2b-linux@master/api.json
 . $CRASHDIR/configs/ShellCrash.cfg
 
 #工具
